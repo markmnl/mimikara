@@ -3,7 +3,7 @@
 <p align="center"><em>Anime subtitles that teach you Japanese while you watch.</em></p>
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Luffy: each English word appears as its Japanese counterpart is spoken, with the optional romaji and Japanese lines above" width="720">
+  <img src="docs/luffy-romaji-japanese.gif" alt="Luffy: each English word appears as its Japanese counterpart is spoken, with the optional romaji and Japanese lines above" width="720">
 </p>
 
 Each English word appears **at the moment its Japanese counterpart is spoken**, yet the
