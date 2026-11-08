@@ -68,7 +68,8 @@ What happens:
 
 With `--all-modes`, load the files in mpv (`mpv ep01.mkv --sub-files=ep01.en.ass:ep01.romaji.ass:ep01.japanese.ass`)
 and press `j` to cycle English-only → + romaji → + Japanese. `ep01.all.ass` holds
-every style and is what the browser extension consumes.
+every style and is what the browser extension consumes. `tools/mpv_cycle_check.py`
+drives a headless mpv over its IPC socket, presses `j` and screenshots each state.
 
 Other commands: `mimikara render ep01.mimikara.json -o ep01.ass [--romaji --kana --all-modes --report]`,
 `mimikara align ep01.mimikara.json [--literal]`, `mimikara time ep01.mimikara.json --audio ep01.mkv --aligner mfa`.
