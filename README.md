@@ -10,10 +10,6 @@ Each English word appears **at the moment its Japanese counterpart is spoken**, 
 finished line still reads left to right in plain English. You keep watching with
 English subtitles and pick up Japanese word order and vocabulary without trying.
 
-<p align="center">
-  <img src="docs/luffy.png" alt="I'm ... King of the Pirates! - 'gonna be' is still dim because なる has not been said yet" width="600">
-</p>
-
 Luffy says **海賊王に おれは なる!** (*kaizoku-ō ni ore wa naru*, literally "Pirate King,
 I will become"). The subtitle shows *King of the Pirates* first, then *I'm*, and only
 when he finally says なる does *gonna be* light up. Words never move or reflow; they
@@ -22,7 +18,7 @@ only change colour and opacity.
 Optional romaji and Japanese lines light up word by word, colour-paired with the English:
 
 <p align="center">
-  <img src="docs/modes.png" alt="English only, with romaji, and with Japanese script" width="640">
+  <img src="docs/modes.gif" alt="The same line with the romaji and Japanese lines switched on" width="720">
 </p>
 
 ## Quick start
