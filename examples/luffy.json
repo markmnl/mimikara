@@ -1,0 +1,28 @@
+{
+  "title": "One Piece - Luffy's line (prototype)",
+  "notes": "Cue times are placeholders. Japanese word timings are estimated from mora counts unless a token has an explicit start_ms. Tune against the real audio by adding start_ms to tokens.",
+  "lines": [
+    {
+      "start": "0:00:00.50",
+      "end": "0:00:04.50",
+      "speech_start_ms": 200,
+      "speech_end_ms": 2800,
+      "ja": [
+        { "text": "海賊", "romaji": "kaizoku" },
+        { "text": "王",   "romaji": "ō" },
+        { "text": "に",   "romaji": "ni",  "role": "particle" },
+        { "text": "おれ", "romaji": "ore" },
+        { "text": "は",   "romaji": "wa",  "role": "particle" },
+        { "text": "なる", "romaji": "naru" },
+        { "text": "!",    "romaji": "!" }
+      ],
+      "en": [
+        { "text": "I'm",      "ja": [3] },
+        { "text": "gonna be", "ja": [5] },
+        { "text": "King",     "ja": [1] },
+        { "text": "of the",   "ja": [], "attach": "next" },
+        { "text": "Pirates!", "ja": [0] }
+      ]
+    }
+  ]
+}

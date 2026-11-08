@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>mimikara overlay dev harness</title>
+<style>body{background:#222;color:#ddd;font:14px system-ui;margin:20px} #wrap{position:relative;width:960px} video{width:960px;display:block} iframe{position:absolute;left:0;top:0;border:0;background:transparent;pointer-events:none} label{margin-right:12px}</style>
+</head><body>
+<p>Dev harness: mirrors content.js messaging without chrome.* APIs.
+<label><input type="checkbox" id="romaji"> romaji</label><label><input type="checkbox" id="kana"> kana</label><label><input type="checkbox" id="english" checked> english</label>
+<span id="status"></span></p>
+<div id="wrap"><video id="v" src="sample.webm" controls muted></video><iframe id="f" src="../overlay.html"></iframe></div>
+<script>
+const v = document.getElementById('v'), f = document.getElementById('f');
+const st = { romaji:false, kana:false, english:true, ass:'' , ready:false };
+const send = (m) => f.contentWindow.postMessage(m, '*');
+window.addEventListener('message', (ev) => {
+  if (!ev.data || ev.data.mimikara !== 'overlay') return;
+  if (ev.data.type === 'ready') { st.ready = true; push(); }
+  if (ev.data.type === 'status') document.getElementById('status').textContent = ev.data.text;
+});
+fetch('luffy.all.ass').then(r => r.text()).then(t => { st.ass = t; push(); });
+function push() { if (!st.ready || !st.ass) return; send({ type:'config', offset:0 }); send({ type:'track', content: st.ass, romaji: st.romaji, kana: st.kana, english: st.english }); layout(); loop(); }
+for (const k of ['romaji','kana','english']) document.getElementById(k).onchange = (e) => { st[k] = e.target.checked; send({ type:'track', content: st.ass, romaji: st.romaji, kana: st.kana, english: st.english }); };
+function layout() { const r = v.getBoundingClientRect(); f.style.width = r.width+'px'; f.style.height = r.height+'px'; send({ type:'size', width:r.width, height:r.height, videoWidth: v.videoWidth||1280, videoHeight: v.videoHeight||720 }); }
+let started = false;
+function loop() { if (started) return; started = true; const tick = () => { send({ type:'time', t: v.currentTime, paused: v.paused }); requestAnimationFrame(tick); }; tick(); }
+v.addEventListener('loadedmetadata', layout);
+window.devSeek = (t) => { v.currentTime = t; };
+</script></body></html>

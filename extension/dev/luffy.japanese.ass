@@ -1,0 +1,21 @@
+[Script Info]
+Title: One Piece - Luffy's line (prototype) [japanese]
+ScriptType: v4.00+
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+PlayResX: 1280
+PlayResY: 720
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: English,Noto Sans CJK JP,58,&H00FFFFFF,&H00FFFFFF,&H00101010,&H80000000,-1,0,0,0,100,100,0,0,1,3,1,2,40,40,56,1
+Style: EnglishSolo,Noto Sans CJK JP,58,&H00FFFFFF,&H00FFFFFF,&H00101010,&H80000000,-1,0,0,0,100,100,0,0,1,3,1,2,40,40,56,1
+Style: Romaji,Noto Sans CJK JP,40,&H00FFFFFF,&H00FFFFFF,&H00101010,&H80000000,0,0,0,0,100,100,1,0,1,2.5,1,2,40,40,132,1
+Style: Kana,Noto Sans CJK JP,34,&H00FFFFFF,&H00FFFFFF,&H00101010,&H80000000,0,0,0,0,100,100,2,0,1,2.5,1,2,40,40,190,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+
+Dialogue: 0,0:00:00.50,0:00:04.50,Romaji,,0,0,0,,{\1c&H7A6F6B&\t(200,320,\1c&HA8E37B&)}kaizoku {\1c&H7A6F6B&\t(1000,1120,\1c&HFFC85E&)}ō {\1c&H7A6F6B&\t(1400,1520,\1c&HACA09A&)}ni {\1c&H7A6F6B&\t(1600,1720,\1c&H4DC9FF&)}ore {\1c&H7A6F6B&\t(2000,2120,\1c&HACA09A&)}wa {\1c&H7A6F6B&\t(2200,2320,\1c&H5C8AFF&)}naru{\1c&H7A6F6B&\t(2600,2720,\1c&HFFFFFF&)}!
+Dialogue: 0,0:00:00.50,0:00:04.50,Kana,,0,0,0,,{\1c&H7A6F6B&\t(200,320,\1c&HA8E37B&)}海賊{\1c&H7A6F6B&\t(1000,1120,\1c&HFFC85E&)}王{\1c&H7A6F6B&\t(1400,1520,\1c&HACA09A&)}に{\1c&H7A6F6B&\t(1600,1720,\1c&H4DC9FF&)}おれ{\1c&H7A6F6B&\t(2000,2120,\1c&HACA09A&)}は{\1c&H7A6F6B&\t(2200,2320,\1c&H5C8AFF&)}なる{\1c&H7A6F6B&\t(2600,2720,\1c&HFFFFFF&)}!
+Dialogue: 0,0:00:00.50,0:00:04.50,English,,0,0,0,,{\alpha&HFF&\t(1600,1720,\alpha&H00&)\1c&H4DC9FF&}I'm {\alpha&HFF&\t(2200,2320,\alpha&H00&)\1c&H5C8AFF&}gonna be {\alpha&HFF&\t(1000,1120,\alpha&H00&)\1c&HFFC85E&}King {\alpha&HFF&\t(200,320,\alpha&H00&)\1c&HFFFFFF&}of the {\alpha&HFF&\t(200,320,\alpha&H00&)\1c&HA8E37B&}Pirates!

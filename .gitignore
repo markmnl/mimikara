@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+out/
+*.mimikara.wav
+extension/package/
+extension/*.tgz
+.pytest_cache/

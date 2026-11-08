@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "mimikara overlay",
+  "version": "0.1.0",
+  "description": "Overlay a prebuilt mimikara .ass subtitle file on a streaming site's video, with toggles for the romaji and Japanese lines.",
+  "permissions": ["activeTab", "scripting", "storage", "unlimitedStorage"],
+  "action": { "default_title": "mimikara: show subtitle overlay on this page" },
+  "background": { "service_worker": "background.js" },
+  "web_accessible_resources": [
+    { "resources": ["overlay.html", "overlay.js", "vendor/*"], "matches": ["<all_urls>"] }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "icons": {}
+}
