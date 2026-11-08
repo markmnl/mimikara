@@ -134,3 +134,21 @@ def test_ollama_completer_request_shape(monkeypatch):
     assert seen["body"]["model"] == "qwen-test" and seen["body"]["format"] == A.OUTPUT_SCHEMA
     assert seen["body"]["messages"][0] == {"role": "system", "content": "SYS"}
     assert A.make_completer("none") is None
+
+
+def test_claude_completer_turns_api_errors_into_align_errors(monkeypatch, tmp_path):
+    anthropic = pytest.importorskip("anthropic")
+    import httpx2 as httpx
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+    c = A.ClaudeCompleter(model="claude-opus-5-5")
+    resp = httpx.Response(400, request=httpx.Request("POST", "https://api.anthropic.com/v1/messages"),
+                          json={"error": {"type": "invalid_request_error", "message": "credit balance too low"}})
+    def boom(system, user):
+        raise anthropic.BadRequestError("credit balance too low", response=resp, body=None)
+    monkeypatch.setattr(c, "_create", boom)
+    with pytest.raises(A.AlignError, match="400"):
+        c("SYS", "USER")
+    # the driver degrades to unlinked English with a warning instead of crashing
+    ln = luffy_line()
+    stats = A.align_lines([ln], c, cache_dir=tmp_path, progress=lambda m: None)
+    assert stats["failed"] == 1 and "400" in ln.warnings[0]

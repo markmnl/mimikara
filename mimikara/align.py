@@ -210,7 +210,27 @@ class ClaudeCompleter:
         self.client = anthropic.Anthropic()
 
     def __call__(self, system: str, user: str) -> dict[str, Any]:
-        resp = self.client.beta.messages.create(
+        import anthropic
+        try:
+            resp = self._create(system, user)
+        except anthropic.AuthenticationError as e:
+            raise AlignError(f"Anthropic API rejected the credentials: {e.message}") from e
+        except anthropic.RateLimitError as e:
+            raise AlignError(f"Anthropic API rate limit: {e.message}") from e
+        except anthropic.APIStatusError as e:      # 400 billing, 404 model, 5xx ...
+            raise AlignError(f"Anthropic API error {e.status_code}: {e.message}") from e
+        except anthropic.APIConnectionError as e:
+            raise AlignError(f"could not reach the Anthropic API: {e}") from e
+        if resp.stop_reason == "refusal":
+            raise AlignError("the model declined to align this batch")
+        text = next((b.text for b in resp.content if b.type == "text"), "")
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as e:
+            raise AlignError(f"model returned invalid JSON: {e}") from e
+
+    def _create(self, system: str, user: str):
+        return self.client.beta.messages.create(
             model=self.model,
             max_tokens=16000,
             betas=["server-side-fallback-2026-07-01"],
@@ -220,13 +240,6 @@ class ClaudeCompleter:
             output_config={"effort": self.effort,
                            "format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
         )
-        if resp.stop_reason == "refusal":
-            raise AlignError("the model declined to align this batch")
-        text = next((b.text for b in resp.content if b.type == "text"), "")
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError as e:
-            raise AlignError(f"model returned invalid JSON: {e}") from e
 
 
 @dataclass
@@ -322,15 +335,23 @@ def align_lines(lines: list[Line], completer: Completer | None, *, model: str = 
                 stats["requested"] += 1
             else:
                 line.en = unlinked_tokens(line)
-                line.warnings.append("alignment failed; English shown unlinked")
+                line.warnings.append("alignment failed; English shown unlinked"
+                                     + (f" ({_last_error})" if _last_error else ""))
                 stats["failed"] += 1
+    if _last_error and progress:
+        progress(f"LLM error: {_last_error}")
     return stats
 
 
+_last_error: str | None = None
+
+
 def _request(completer: Completer, system: str, user: str) -> list[dict[str, Any]]:
+    global _last_error
     try:
         data = completer(system, user)
-    except AlignError:
+    except AlignError as e:
+        _last_error = str(e)
         return []
     return list(data.get("lines", [])) if isinstance(data, dict) else []
 
