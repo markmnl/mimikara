@@ -35,7 +35,11 @@ def add_render_args(ap: argparse.ArgumentParser) -> None:
 def add_llm_args(ap: argparse.ArgumentParser) -> None:
     ap.add_argument("--literal", action="store_true",
                     help="let the LLM rewrite loose English lines so more words link")
-    ap.add_argument("--model", default=None, help="Claude model id for alignment")
+    ap.add_argument("--llm", choices=["claude", "ollama", "none"], default="claude",
+                    help="where word links come from: the Claude API (default), a local Ollama model, or none")
+    ap.add_argument("--model", default=None,
+                    help="model id for alignment (default: claude-opus-5-5 for claude, qwen3.8 for ollama)")
+    ap.add_argument("--ollama-host", default=None, help="Ollama URL (default http://127.0.0.1:11434)")
     ap.add_argument("--effort", default="medium", choices=["low", "medium", "high"],
                     help="model effort for alignment")
     ap.add_argument("--cache", type=Path, default=None, help="alignment cache dir")
@@ -69,10 +73,11 @@ def do_render(doc: Document, args: argparse.Namespace) -> None:
 def do_align(doc: Document, args: argparse.Namespace) -> None:
     from . import align as A
     completer = None
-    model = args.model or A.DEFAULT_MODEL
-    if not args.no_llm:
+    backend = "none" if args.no_llm else args.llm
+    model = args.model or (A.OllamaCompleter.model if backend == "ollama" else A.DEFAULT_MODEL)
+    if backend != "none":
         try:
-            completer = A.ClaudeCompleter(model=model, effort=args.effort)
+            completer = A.make_completer(backend, model, args.effort, args.ollama_host)
         except Exception as e:  # missing SDK or credentials
             _say(f"warning: LLM unavailable ({e}); English will be shown unlinked")
     stats = A.align_lines(doc.lines, completer, model=model, literal=args.literal,

@@ -111,3 +111,26 @@ def test_batching_and_line_breaks(tmp_path):
     stats = A.align_lines(lines, fake, cache_dir=tmp_path, batch_size=2)
     assert stats["requested"] == 3 and len(fake.calls) == 2
     assert [e.break_before for e in lines[0].en] == [False, False, False, True, False]
+
+
+def test_ollama_completer_request_shape(monkeypatch):
+    import io, urllib.request
+    seen = {}
+
+    class Resp(io.BytesIO):
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake_urlopen(req, timeout=None):
+        seen["url"] = req.full_url
+        seen["body"] = json.loads(req.data)
+        return Resp(json.dumps({"message": {"role": "assistant", "content": json.dumps({"lines": [GOOD]})}}).encode())
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    c = A.make_completer("ollama", "qwen-test", host="http://localhost:11434/")
+    out = c("SYS", "USER")
+    assert out["lines"][0]["en"][2]["text"] == "King"
+    assert seen["url"] == "http://localhost:11434/api/chat"
+    assert seen["body"]["model"] == "qwen-test" and seen["body"]["format"] == A.OUTPUT_SCHEMA
+    assert seen["body"]["messages"][0] == {"role": "system", "content": "SYS"}
+    assert A.make_completer("none") is None

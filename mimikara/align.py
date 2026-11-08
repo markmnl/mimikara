@@ -229,6 +229,52 @@ class ClaudeCompleter:
             raise AlignError(f"model returned invalid JSON: {e}") from e
 
 
+@dataclass
+class OllamaCompleter:
+    """Local model through Ollama's /api/chat with a JSON-schema ``format``."""
+    model: str = "qwen3.8"
+    host: str = "http://127.0.0.1:11434"
+    timeout: float = 1800.0
+
+    def __call__(self, system: str, user: str) -> dict[str, Any]:
+        import urllib.request
+        body = json.dumps({
+            "model": self.model,
+            "stream": False,
+            "think": False,
+            "format": OUTPUT_SCHEMA,
+            "options": {"temperature": 0, "num_ctx": 8192},
+            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+        }).encode("utf-8")
+        req = urllib.request.Request(f"{self.host.rstrip('/')}/api/chat", data=body,
+                                     headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        except OSError as e:
+            raise AlignError(f"ollama request failed: {e}") from e
+        text = (data.get("message") or {}).get("content", "")
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as e:
+            raise AlignError(f"model returned invalid JSON: {e}") from e
+
+
+def make_completer(backend: str, model: str | None = None, effort: str = "medium",
+                   host: str | None = None) -> Completer | None:
+    """``claude`` (Anthropic API), ``ollama`` (local), or ``none``."""
+    if backend == "none":
+        return None
+    if backend == "claude":
+        return ClaudeCompleter(model=model or DEFAULT_MODEL, effort=effort)
+    if backend == "ollama":
+        kw = {"model": model or OllamaCompleter.model}
+        if host:
+            kw["host"] = host
+        return OllamaCompleter(**kw)
+    raise ValueError(f"unknown LLM backend {backend!r}")
+
+
 # ---------------------------------------------------------------------------
 # Driver
 # ---------------------------------------------------------------------------

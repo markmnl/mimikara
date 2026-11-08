@@ -43,6 +43,7 @@ mimikara build ep01.ja.srt ep01.en.srt -o ep01.ass --romaji --kana # + romaji an
 mimikara build ep01.ja.srt ep01.en.srt -o ep01.ass --all-modes     # ep01.en/.romaji/.japanese/.all.ass
 mimikara build ep01.ja.srt ep01.en.srt -o ep01.ass --audio ep01.mkv --all-modes   # + forced alignment
 mimikara build ... --literal     # LLM rewrites loose official lines so more words link
+mimikara build ... --llm ollama  # use a local model through Ollama instead of the Claude API
 mimikara build ... --no-llm      # skip alignment (English appears whole, at speech start)
 ```
 
@@ -56,9 +57,11 @@ What happens:
    their auxiliaries (食べたくない is one word), prefixes and counters are merged,
    particles stay separate. Romaji comes from cutlet when installed, else a
    built-in Hepburn converter (`--romaji-engine builtin` for macron style).
-3. **Align** with Claude (`claude-opus-5-5` by default, structured JSON output).
-   Results are cached per line in `~/.cache/mimikara/align/` so reruns are free.
-   Answers that do not reproduce the English text are rejected and retried once.
+3. **Align** with an LLM: Claude (`claude-opus-5-5` by default, structured JSON
+   output) or, with `--llm ollama [--model qwen3.8]`, a local model through Ollama's
+   JSON-schema `format`. Results are cached per line in `~/.cache/mimikara/align/`
+   so reruns are free. Answers that do not reproduce the English text are rejected
+   and retried once.
 4. **Time** each Japanese word: speech window spread by mora count; with `--audio`,
    forced alignment (WhisperX character alignment or MFA word alignment) writes
    `align_ms` per token and flags lines where the aligner was unsure. Manual
