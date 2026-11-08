@@ -32,3 +32,9 @@ To rebuild: `npm i jassub@2.5.36 esbuild && npx esbuild node_modules/jassub/dist
 
 `dev/dev.html` mirrors `content.js` on a local page: `python -m http.server 8777`
 from the `extension/` folder, open `http://localhost:8777/dev/dev.html`.
+
+`dev/test_extension.py` loads the real extension unpacked in Chromium through
+Playwright, injects it on `dev/video.html` (or a URL you pass), loads
+`dev/luffy.all.ass`, toggles the layers, checks persistence across a reload and
+writes screenshots: `pip install playwright && playwright install chromium`, then
+`python extension/dev/test_extension.py out/`.
