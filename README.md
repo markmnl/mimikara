@@ -28,7 +28,11 @@ pip install cutlet               # optional, preferred romaniser (needs a C++ co
 
 Needs `ffmpeg` on PATH for anything audio related. Forced alignment is optional:
 `pip install whisperx` or install Montreal Forced Aligner (`mfa`) with its
-`japanese_mfa` models.
+`japanese_mfa` models. On Python 3.14 whisperx's pinned `ctranslate2==4.4.0` has
+no wheel; install it as `pip install --no-deps whisperx && pip install
+"ctranslate2>=4.6" faster-whisper torch torchaudio transformers pandas nltk
+pyannote.audio` instead. The first `--audio` run downloads the Japanese wav2vec2
+alignment model (about 1.2 GB) from Hugging Face.
 
 ## Build subtitles for an episode
 
