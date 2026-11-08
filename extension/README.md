@@ -15,6 +15,13 @@ colouring from the `.all.ass` file.
 Timing comes from the subtitle file, so if the stream has a different offset
 from your subtitle source, adjust *offset* (seconds).
 
+Checked on Crunchyroll (signed in, One Piece, Japanese audio) with the extension
+loaded unpacked and started from the toolbar button: the overlay renders over the
+player and the toggles switch the lines.  The overlay frame lives inside the
+panel's shadow DOM and re-inserts itself if something removes it; a `mimikara:`
+warning in the console says when that happened.  Note that Claude in Chrome's
+page tools refuse to run while another extension's frame is on the page.
+
 ## How it works
 
 `content.js` floats an `overlay.html` iframe (extension origin, so JASSUB's workers

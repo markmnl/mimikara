@@ -43,13 +43,29 @@
   document.documentElement.appendChild(host);
 
   const $ = (s) => shadow.querySelector(s);
+  // The overlay iframe lives inside the shadow root too: some players
+  // (Crunchyroll's, for one) periodically sweep the document for foreign
+  // <iframe> elements and remove them, and querySelectorAll does not see
+  // into a shadow root.
   const iframe = document.createElement('iframe');
   iframe.src = ext('overlay.html');
   iframe.setAttribute('allowtransparency', 'true');
   iframe.style.cssText = 'position:fixed; border:0; background:transparent; pointer-events:none; z-index:2147483646; left:0; top:0; width:0; height:0;';
-  document.documentElement.appendChild(iframe);
+  shadow.appendChild(iframe);
+  // ...and if something (an ad blocker, the player) still yanks it out, put
+  // it back.  Re-inserting reloads overlay.html; its 'ready' message makes
+  // pushAll() resend the subtitle, toggles and size, so nothing is lost.
+  let reinserts = 0;
+  new MutationObserver(() => {
+    if (!iframe.isConnected && host.isConnected && !st.destroyed) {
+      reinserts += 1;
+      console.warn(`mimikara: overlay frame was removed from the page (${reinserts}x); re-inserting`);
+      st.ready = false;
+      shadow.appendChild(iframe);
+    }
+  }).observe(shadow, { childList: true });
 
-  const st = { ass: '', fontData: null, romaji: false, kana: false, english: true, offset: 0, ready: false, raf: 0, visible: true };
+  const st = { ass: '', fontData: null, romaji: false, kana: false, english: true, offset: 0, ready: false, raf: 0, visible: true, destroyed: false };
   const send = (msg) => iframe.contentWindow && iframe.contentWindow.postMessage(msg, '*');
 
   window.addEventListener('message', (ev) => {
@@ -134,13 +150,16 @@
     };
     st.raf = requestAnimationFrame(tick);
   }
-  document.addEventListener('fullscreenchange', () => { setTimeout(layout, 50); // fullscreen moves the panel too
-    (document.fullscreenElement || document.documentElement).appendChild(host); (document.fullscreenElement || document.documentElement).appendChild(iframe); });
+  // fullscreen: move the host (panel + overlay) into the fullscreen element so it stays visible
+  document.addEventListener('fullscreenchange', () => {
+    (document.fullscreenElement || document.documentElement).appendChild(host);
+    setTimeout(layout, 50);
+  });
 
   function destroy() {
-    cancelAnimationFrame(st.raf); host.remove(); iframe.remove(); delete window.__mimikara;
+    st.destroyed = true; cancelAnimationFrame(st.raf); host.remove(); delete window.__mimikara;
   }
-  window.__mimikara = { toggle() { st.visible = !st.visible; host.style.display = iframe.style.display = st.visible ? '' : 'none'; } };
+  window.__mimikara = { toggle() { st.visible = !st.visible; host.style.display = st.visible ? '' : 'none'; } };
 
   function pickVideo() {
     const vids = [...document.querySelectorAll('video')].filter(v => v.getBoundingClientRect().width > 0);
