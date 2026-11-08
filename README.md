@@ -3,7 +3,7 @@
 <p align="center"><em>Anime subtitles that teach you Japanese while you watch.</em></p>
 
 <p align="center">
-  <img src="docs/demo.gif" alt="Luffy: each English word appears as its Japanese counterpart is spoken" width="720">
+  <img src="docs/demo.gif" alt="Luffy: each English word appears as its Japanese counterpart is spoken, with the optional romaji and Japanese lines above" width="720">
 </p>
 
 Each English word appears **at the moment its Japanese counterpart is spoken**, yet the
@@ -15,11 +15,8 @@ I will become"). The subtitle shows *King of the Pirates* first, then *I'm*, and
 when he finally says なる does *gonna be* light up. Words never move or reflow; they
 only change colour and opacity.
 
-Optional romaji and Japanese lines light up word by word, colour-paired with the English:
-
-<p align="center">
-  <img src="docs/modes.gif" alt="The same line with the romaji and Japanese lines switched on" width="720">
-</p>
+The romaji and Japanese lines are optional (`--romaji`, `--kana`). They light up word
+by word, colour-paired with the English. The default is English only.
 
 ## Quick start
 
